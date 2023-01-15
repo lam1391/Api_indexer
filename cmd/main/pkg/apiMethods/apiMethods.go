@@ -1,11 +1,13 @@
 package apiMethods
 
 import (
+	envV "api_indexer/cmd/main/pkg/envVariables"
 	"encoding/json"
 	"errors"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -34,6 +36,16 @@ type ResponseMails struct {
 			Source   Mail   `json:"_source"`
 		} `json:"hits"`
 	} `json:"hits"`
+}
+
+func GetVariables() (string, string, string) {
+	//get credencials for Zin Search API
+	envV.GetEnvVariables()
+	user := os.Getenv("USER_ZINC")
+	password := os.Getenv("PASS_ZINC")
+	zinc_host := os.Getenv("HOST_ZINC")
+
+	return user, password, zinc_host
 }
 
 // "AllMails" handles GET requests by extracting all the mail in database,
@@ -90,11 +102,15 @@ func get_filter_mails(from string, maxCount string, filter string) (ResponseMail
         "_source": ["From","To","Date","Subject","body"]
     }`
 
-	req, err := http.NewRequest("POST", "http://localhost:4080/api/maildir/_search", strings.NewReader(query))
+	user, pass, host := GetVariables()
+	host_method := host + "/api/maildir/_search"
+
+	req, err := http.NewRequest("POST", host_method, strings.NewReader(query))
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.SetBasicAuth("admin", "Complexpass#123")
+
+	req.SetBasicAuth(user, pass)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
 
@@ -133,11 +149,14 @@ func get_all_mails(from string, max_item string) ResponseMails {
 		"max_results":` + max_item + `,
 		"_source": ["From","To","Date","Subject","body"]     }`
 
-	req, err := http.NewRequest("POST", "http://localhost:4080/api/maildir/_search", strings.NewReader(query))
+	user, pass, host := GetVariables()
+	host_method := host + "/api/maildir/_search"
+
+	req, err := http.NewRequest("POST", host_method, strings.NewReader(query))
 	if err != nil {
 		log.Fatal(err)
 	}
-	req.SetBasicAuth("admin", "Complexpass#123")
+	req.SetBasicAuth(user, pass)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36")
 
