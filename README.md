@@ -41,3 +41,35 @@ To run this project, you will need to add the following environment variables to
 `PASS_ZINC`
 
 `HOST_ZINC`
+
+
+
+# Authentication Server 
+
+Validates the user and password and generates a token, the token is needed to make requests to the API.
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+
+`SECRET_KEY`
+
+`PORT`
+
+
+
+## Examples
+Generate Token using username & password
+
+```Curl
+    POST http://localhost:3000/token
+    User-Agent: Fiddler
+    Host: localhost:3000
+    Content-Length: 50
+    Content-Type: application/x-www-form-urlencoded
+
+    grant_type=password&username=user01&password=12345
+}
+```
+
