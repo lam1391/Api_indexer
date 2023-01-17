@@ -11,6 +11,11 @@ require (
 )
 
 require (
+	github.com/go-chi/oauth v0.0.0-20210913085627-d937e221b3ef // indirect
+	github.com/gofrs/uuid v4.0.0+incompatible // indirect
+)
+
+require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/joho/godotenv v1.4.0
 )

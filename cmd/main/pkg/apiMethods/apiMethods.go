@@ -53,9 +53,6 @@ func GetVariables() (string, string, string) {
 
 func AllMails(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("content-Type", "Application/json")
-	w.Header().Set("done-by", "Luis Martinez")
-
 	from := r.URL.Query().Get("from")
 	max_items := r.URL.Query().Get("max")
 
@@ -69,9 +66,6 @@ func AllMails(w http.ResponseWriter, r *http.Request) {
 // calling the "get_filter_mails" function, and sending the response as a JSON encoded object.
 
 func FilterMails(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("content-Type", "Application/json")
-	w.Header().Set("done-by", "Luis Martinez")
 
 	from := r.URL.Query().Get("from")
 	max_items := r.URL.Query().Get("max")

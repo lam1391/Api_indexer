@@ -2,15 +2,18 @@ package apiServer
 
 import (
 	apiMethod "api_indexer/cmd/main/pkg/apiMethods"
+	envV "api_indexer/cmd/main/pkg/envVariables"
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/docgen"
+	"github.com/go-chi/oauth"
 	"github.com/go-chi/render"
 )
 
@@ -43,11 +46,11 @@ func (s *Server) MountHandlers() {
 	// Basic CORS
 	s.Router.Use(cors.Handler(cors.Options{
 
-		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT"},
+		AllowedHeaders:   []string{"User-Agent", "Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
@@ -66,9 +69,12 @@ func (s *Server) MountHandlers() {
 
 func (s *Server) ApiMethods() {
 
-	s.Router.Get("/", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("Api indexer by Luis Martinez")) })
-	s.Router.Get("/panic", func(w http.ResponseWriter, r *http.Request) { panic("test") })
+	envV.GetEnvVariables()
+	SECRET_KEY := os.Getenv("SECRET_KEY")
+
+	s.Router.With(oauth.Authorize(SECRET_KEY, nil)).Get("/", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("Api indexer by Luis Martinez")) })
+	s.Router.With(oauth.Authorize(SECRET_KEY, nil)).Get("/panic", func(w http.ResponseWriter, r *http.Request) { panic("test") })
 	// REST y routes for "mail" resource
-	s.Router.Get("/mails/", apiMethod.AllMails)
-	s.Router.Get("/mails/filter/", apiMethod.FilterMails)
+	s.Router.With(oauth.Authorize(SECRET_KEY, nil)).Get("/mails/", apiMethod.AllMails)
+	s.Router.With(oauth.Authorize(SECRET_KEY, nil)).Get("/mails/filter/", apiMethod.FilterMails)
 }
